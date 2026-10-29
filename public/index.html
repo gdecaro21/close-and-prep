@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <title>Close &amp; Prep · Free restaurant prep sheet and order list generator</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20130%20160%22%3E%3Crect%20x%3D%2248%22%20y%3D%226%22%20width%3D%2224%22%20height%3D%2214%22%20rx%3D%224%22%20fill%3D%22%23F4BE2A%22%20stroke%3D%22%23141110%22%20stroke-width%3D%225%22/%3E%3Cpath%20d%3D%22M52%2020h16v12c0%206%2020%2010%2020%2030v76a14%2014%200%200%201-14%2014H46a14%2014%200%200%201-14-14V62c0-20%2020-24%2020-30z%22%20fill%3D%22%23B3160F%22%20stroke%3D%22%23141110%22%20stroke-width%3D%225%22/%3E%3Crect%20x%3D%2236%22%20y%3D%2264%22%20width%3D%2248%22%20height%3D%2244%22%20rx%3D%2210%22%20fill%3D%22%23F6EBDD%22%20stroke%3D%22%23141110%22%20stroke-width%3D%224%22/%3E%3Ccircle%20cx%3D%2251%22%20cy%3D%2279%22%20r%3D%224.5%22%20fill%3D%22%23141110%22/%3E%3Ccircle%20cx%3D%2269%22%20cy%3D%2279%22%20r%3D%224.5%22%20fill%3D%22%23141110%22/%3E%3Cpath%20d%3D%22M50%2089q10%2011%2020%200%22%20fill%3D%22none%22%20stroke%3D%22%23141110%22%20stroke-width%3D%224.5%22%20stroke-linecap%3D%22round%22/%3E%3C/svg%3E">
 <link rel="canonical" href="https://close-and-prep.gaia-decaro.workers.dev/">
 <meta property="og:title" content="Close &amp; Prep: free restaurant prep sheet and order list generator">
 <meta property="og:description" content="Enter what you sold tonight and get tomorrow's prep sheet and supplier order.">
@@ -44,9 +45,22 @@ button, input { font: inherit; color: inherit; }
 
 /* Shared header */
 .hdr { display: grid; gap: 12px; padding-top: 40px; }
-.hdr h1 { font-size: clamp(2rem, 5vw, 3.4rem); max-width: 18ch; }
+.hdr h1 { font-size: clamp(2rem, 5vw, 3.6rem); max-width: 26ch; }
+.hdr .title { display: flex; align-items: flex-end; gap: clamp(12px, 3vw, 28px); }
+.mascot { flex: none; width: clamp(72px, 11vw, 120px); height: auto; overflow: visible; }
+.mascot .arm { transform-origin: 84px 78px; animation: wave 1.8s ease-in-out infinite; }
+.mascot .lids { transform-origin: 60px 74px; animation: blink 4.5s infinite; }
+.mascot .whole { transform-origin: 60px 150px; animation: bob 3.6s ease-in-out infinite; }
+@keyframes wave { 0%, 60%, 100% { transform: rotate(0deg); } 10%, 30%, 50% { transform: rotate(-28deg); } 20%, 40% { transform: rotate(8deg); } }
+@keyframes blink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(.1); } }
+@keyframes bob { 0%, 100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
+@media (prefers-reduced-motion: reduce) { .mascot .arm, .mascot .lids, .mascot .whole { animation: none; } }
 .hdr p { font-size: 17px; max-width: 62ch; color: var(--soft); }
 .venue { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: var(--soft); }
+.venuerow { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; }
+.upload { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 14px; border-radius: 999px; border: 1.5px solid var(--black); background: transparent; cursor: pointer; font-size: 14px; font-weight: 600; }
+.upload:hover { background: var(--yellow); }
+.upload svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .venue input { border: 0; border-bottom: 1.5px solid var(--black); background: transparent; padding: 2px 0; width: 170px; font-weight: 700; color: var(--black); }
 
 /* Shared controls */
@@ -229,9 +243,21 @@ a.copy:hover { background: var(--red); color: var(--cream); }
     return names.map(n => `<div class="sup"><div class="sup-h"><b>${n}</b><a class="copy" href="https://wa.me/?text=${encodeURIComponent(supText(n))}" target="_blank" rel="noopener" aria-label="Order from ${n} on WhatsApp">Order</a></div><ul>${sups[n].map(l => `<li><span>${l.packs}×</span>${l.it.packName}</li>`).join("")}</ul></div>`).join("");
   };
   const header = () => `<header class="hdr">
-      <h1>Free restaurant prep sheet and order list generator</h1>
+      <div class="title"><svg class="mascot" viewBox="0 0 130 160" role="img" aria-label="A smiling ketchup bottle waving hello">
+        <g class="whole">
+          <g class="arm"><path d="M86 82 C 100 74, 108 62, 112 48" fill="none" stroke="#141110" stroke-width="5" stroke-linecap="round"/><circle cx="113" cy="45" r="6" fill="#F6EBDD" stroke="#141110" stroke-width="4"/></g>
+          <path d="M34 82 C 24 92, 20 104, 22 114" fill="none" stroke="#141110" stroke-width="5" stroke-linecap="round"/>
+          <rect x="48" y="6" width="24" height="14" rx="4" fill="#F4BE2A" stroke="#141110" stroke-width="4"/>
+          <path d="M52 20 h16 v12 c 0 6, 20 10, 20 30 v 76 a 14 14 0 0 1 -14 14 h -28 a 14 14 0 0 1 -14 -14 v -76 c 0 -20, 20 -24, 20 -30 z" fill="#B3160F" stroke="#141110" stroke-width="4" stroke-linejoin="round"/>
+          <rect x="36" y="64" width="48" height="44" rx="10" fill="#F6EBDD" stroke="#141110" stroke-width="3.5"/>
+          <g class="lids"><circle cx="51" cy="79" r="3.6" fill="#141110"/><circle cx="69" cy="79" r="3.6" fill="#141110"/></g>
+          <circle cx="45" cy="89" r="3.4" fill="#F4BE2A" opacity=".9"/><circle cx="75" cy="89" r="3.4" fill="#F4BE2A" opacity=".9"/>
+          <path d="M51 89 Q 60 99, 69 89" fill="none" stroke="#141110" stroke-width="3.5" stroke-linecap="round"/>
+          <path d="M46 40 c 0 -6, 6 -10, 8 -12" fill="none" stroke="#F6EBDD" stroke-width="4" stroke-linecap="round" opacity=".7"/>
+        </g>
+      </svg><h1>Free restaurant prep sheet and order list generator</h1></div>
       <p>To know what to prep and order after a shift, multiply what you sold by the portion each dish uses. That's what's missing. Check it at close. Anything you make goes on tomorrow's prep sheet, and anything you buy goes on the supplier order.</p>
-      <label class="venue">Kitchen <input id="venue" type="text" value="${esc(S.venue)}" maxlength="30" autocomplete="off"></label>
+      <div class="venuerow"><label class="venue">Kitchen <input id="venue" type="text" value="${esc(S.venue)}" maxlength="30" autocomplete="off"></label><button type="button" class="upload" data-upload><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></svg>Upload your own menu</button></div>
     </header>`;
   const tail = () => `<section class="cta"><p><b>Doing this on paper every night?</b> Tebi is building Inventory that takes stock down with every sale and makes reorder lists for you.</p><a href="https://www.tebi.com/inventory?utm_source=gaia-decaro&amp;utm_medium=free-tool&amp;utm_campaign=close-and-prep&amp;utm_content=cta-main" target="_blank" rel="noopener">See Tebi <span aria-hidden="true">↗</span></a></section>
     <section class="faq" aria-labelledby="hfaq"><h2 id="hfaq">Questions</h2>
@@ -302,6 +328,7 @@ a.copy:hover { background: var(--red); color: var(--cream); }
     }
     const c = e.target.closest("[data-copy]"); if (c) { copy(supText(c.dataset.copy)); return; }
     if (e.target.closest("[data-copyprep]")) { copy(prepText()); return; }
+    if (e.target.closest("[data-upload]")) { toast("Coming soon: your own menu and recipes"); return; }
     if (e.target.closest("[data-reset]")) { S = sample(); save(); render(); toast("Example numbers back"); }
   });
   document.addEventListener("change", e => {
