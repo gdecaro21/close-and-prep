@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://close-and-prep.gaia-decaro.workers.dev/sitemap.xml

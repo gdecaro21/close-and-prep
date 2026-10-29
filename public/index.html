@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Close &amp; Prep · Free restaurant prep sheet and order list generator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="canonical" href="https://close-and-prep.gaia-decaro.workers.dev/">
+<meta property="og:title" content="Close &amp; Prep: free restaurant prep sheet and order list generator">
+<meta property="og:description" content="Enter what you sold tonight and get tomorrow's prep sheet and supplier order.">
+<meta property="og:url" content="https://close-and-prep.gaia-decaro.workers.dev/">
+<meta property="og:type" content="website">
+<meta name="author" content="Gaia De Caro">
+<meta name="robots" content="index, follow">
+
+<meta name="description" content="Free restaurant prep sheet and order list generator. Enter what you sold today and get tomorrow's prep sheet and supplier order.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Archivo:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: three columns read left to right, Sold → Missing → Tomorrow, so the lists update as you edit. Two fonts, four colours plus black. */
+:root {
+  --cream: #F6EBDD;
+  --yellow: #F4BE2A;
+  --red: #B3160F;
+  --blue: #CFE6F0;
+  --black: #141110;
+  --soft: rgba(20, 17, 16, .58);
+  --hair: rgba(20, 17, 16, .16);
+  --f-head: "Playfair Display", Georgia, "Times New Roman", serif;
+  --f-body: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+[hidden] { display: none !important; }
+:root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+body { background: var(--cream); color: var(--black); font-family: var(--f-body); font-size: 16px; line-height: 1.5; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 0 96px; }
+p { margin: 0; }
+h1, h2, h3 { margin: 0; font-family: var(--f-head); font-weight: 900; line-height: 1.05; text-wrap: balance; }
+button, input { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--red); outline-offset: 2px; }
+.num { font-variant-numeric: tabular-nums; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Shared header */
+.hdr { display: grid; gap: 12px; padding-top: 40px; }
+.hdr h1 { font-size: clamp(2rem, 5vw, 3.4rem); max-width: 18ch; }
+.hdr p { font-size: 17px; max-width: 62ch; color: var(--soft); }
+.venue { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: var(--soft); }
+.venue input { border: 0; border-bottom: 1.5px solid var(--black); background: transparent; padding: 2px 0; width: 170px; font-weight: 700; color: var(--black); }
+
+/* Shared controls */
+.step { display: inline-grid; grid-template-columns: 34px 52px 34px; align-items: center; }
+.step button { width: 34px; height: 34px; border-radius: 50%; border: 1.5px solid var(--black); background: transparent; cursor: pointer; font-size: 18px; line-height: 1; display: grid; place-items: center; padding: 0; }
+.step button:hover { background: var(--yellow); }
+.step input { width: 100%; border: 0; background: transparent; text-align: center; font-weight: 700; font-size: 16px; font-variant-numeric: tabular-nums; -moz-appearance: textfield; }
+.step input::-webkit-outer-spin-button, .step input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.guess input { color: var(--soft); font-style: italic; font-weight: 500; }
+.tag { font-size: 11px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; padding: 2px 7px; border-radius: 999px; background: var(--blue); }
+.unit { font-size: 13px; color: var(--soft); }
+.check { width: 22px; height: 22px; accent-color: var(--red); cursor: pointer; flex: none; margin-top: 3px; }
+.task { display: flex; gap: 12px; align-items: flex-start; padding-block: 10px; }
+.task .what { display: grid; }
+.task .what b { font-weight: 700; }
+.task .what b em { font-style: normal; color: var(--red); }
+.task .what small { color: var(--soft); font-size: 13.5px; }
+.task.done .what { text-decoration: line-through; color: var(--soft); }
+.sup { padding-block: 10px; display: grid; gap: 4px; }
+.sup-h { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.sup-h b { font-weight: 700; }
+.copy { border: 0; background: none; padding: 0; font-size: 13px; color: var(--soft); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+a.copy { text-decoration: none; font-weight: 700; color: var(--red); border: 1.5px solid var(--red); border-radius: 999px; padding: 3px 12px; }
+a.copy:hover { background: var(--red); color: var(--cream); }
+.copy:hover { color: var(--red); }
+.sup ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 1px; font-size: 15px; }
+.sup li span { font-weight: 700; color: var(--red); margin-right: 6px; font-variant-numeric: tabular-nums; }
+.muted { color: var(--soft); font-size: 14px; }
+.linkbtn { border: 0; background: none; padding: 0; color: var(--soft); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; font-size: 14px; }
+
+/* Shared footer bits */
+.cta { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px 24px; padding: 18px 22px; border-radius: 14px; background: var(--yellow); }
+.cta p { max-width: 60ch; }
+.cta a { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 22px; border-radius: 999px; background: var(--red); color: var(--cream); font-weight: 700; text-decoration: none; white-space: nowrap; }
+.cta a:hover { background: var(--black); }
+.faq { display: grid; gap: 0; }
+.faq h2 { font-size: 28px; margin-bottom: 8px; }
+.faq details { border-top: 1px solid var(--hair); padding-block: 12px; }
+.faq summary { cursor: pointer; font-weight: 600; list-style: none; display: flex; justify-content: space-between; gap: 12px; }
+.faq summary::after { content: "+"; font-weight: 400; }
+.faq details[open] summary::after { content: "–"; }
+.faq summary::-webkit-details-marker { display: none; }
+.faq details p { color: var(--soft); margin-top: 6px; max-width: 64ch; }
+.foot { font-size: 13px; color: var(--soft); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 20px; }
+
+/* ---------- B · Three columns, left to right ---------- */
+.B { max-width: 1280px; margin: 0 auto; display: grid; gap: 28px; }
+.B .flow { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; align-items: start; }
+.B .colm { border-radius: 18px; overflow: hidden; border: 1.5px solid var(--black); min-width: 0; }
+.B .colm > header { padding: 16px 18px; display: flex; justify-content: space-between; align-items: baseline; gap: 8px; border-bottom: 1.5px solid var(--black); }
+.B .colm > header h2 { font-size: 28px; }
+.B .colm > header span { font-size: 13px; font-weight: 500; font-style: italic; }
+.B .c1 > header { background: var(--yellow); }
+.B .c2 > header { background: var(--blue); }
+.B .c3 > header { background: var(--red); color: var(--cream); }
+.B .body { padding: 8px 18px 18px; display: grid; }
+.B .line { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: center; padding-block: 7px; border-bottom: 1px solid var(--hair); }
+.B .line:last-child { border-bottom: 0; }
+.B .nm { display: grid; min-width: 0; }
+.B .grp { font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--soft); padding-top: 12px; }
+.B h3 { font-size: 20px; padding-top: 10px; }
+.B .arrow { display: none; }
+.B .totals { display: flex; flex-wrap: wrap; gap: 6px 14px; padding-block: 10px; font-size: 14px; }
+.B .totals b { font-family: var(--f-head); font-size: 30px; font-weight: 900; display: block; line-height: 1; }
+
+.toast { position: fixed; left: 50%; bottom: calc(72px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--red); color: var(--cream); padding: 9px 16px; border-radius: 999px; font-weight: 600; z-index: 31; }
+
+@media (max-width: 899px) { .B .flow { grid-template-columns: minmax(0, 1fr); } }
+
+</style>
+
+</head>
+<body>
+<div id="app"></div>
+
+<div class="toast" id="toast" hidden role="status"></div>
+
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[
+{"@type":"WebApplication","name":"Close & Prep","applicationCategory":"BusinessApplication","operatingSystem":"Any","description":"Free restaurant prep sheet and order list generator.","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},"author":{"@type":"Person","name":"Gaia De Caro"},"dateModified":"2026-10-29"},
+{"@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"How do you know what to prep and order after a restaurant shift?","acceptedAnswer":{"@type":"Answer","text":"Multiply what you sold by the portion each dish uses. That is what left the kitchen, and roughly what is missing. Check it at close, then put what you make on tomorrow's prep sheet and what you buy on the supplier order."}},
+{"@type":"Question","name":"What is the difference between a prep sheet and a supplier order?","acceptedAnswer":{"@type":"Answer","text":"The prep sheet is what the kitchen makes in-house for tomorrow. The supplier order is what is bought, rounded up to the pack sizes suppliers sell."}},
+{"@type":"Question","name":"How much minced beef do I need for 100 smash burgers?","acceptedAnswer":{"@type":"Answer","text":"At 80 g per ball, 100 single smash burgers need 8 kg of minced beef and 100 doubles need 16 kg."}},
+{"@type":"Question","name":"How many portions of fries come from a kilo of potatoes?","acceptedAnswer":{"@type":"Answer","text":"About 1.25 kg of raw potatoes gives 1 kg of cut fries, which is 5 portions of 200 g."}},
+{"@type":"Question","name":"How often should a restaurant count its stock?","acceptedAnswer":{"@type":"Answer","text":"A quick check of prepped food and fast-moving stock at every close, and a full count once a week."}},
+{"@type":"Question","name":"What does 86 mean in a kitchen?","acceptedAnswer":{"@type":"Answer","text":"It means an item is sold out and the floor has to stop selling it."}}
+]}]}
+</script>
+
+<script>
+(function () {
+  const RAW = [
+    { id: "mince", name: "Minced beef", unit: "kg", pack: 5, packName: "5 kg minced beef", sup: "Butcher", step: 0.5 },
+    { id: "buns", name: "Brioche buns", unit: "buns", pack: 48, packName: "trays of 48 buns", sup: "Bakery", step: 1 },
+    { id: "potatoes", name: "Potatoes", unit: "kg", pack: 10, packName: "10 kg sacks of potatoes", sup: "Greengrocer", step: 1 },
+    { id: "onions", name: "Onions", unit: "kg", pack: 5, packName: "5 kg bags of onions", sup: "Greengrocer", step: 0.5 },
+    { id: "lemons", name: "Lemons", unit: "lemons", pack: 50, packName: "boxes of 50 lemons", sup: "Greengrocer", step: 1 },
+    { id: "cheese", name: "Cheddar slices", unit: "slices", pack: 84, packName: "packs of 84 cheddar slices", sup: "Wholesaler", step: 1 },
+    { id: "plant", name: "Plant patties", unit: "patties", pack: 20, packName: "boxes of 20 plant patties", sup: "Wholesaler", step: 1 },
+    { id: "pickles", name: "Pickles", unit: "kg", pack: 2.5, packName: "2.5 kg jars of pickles", sup: "Wholesaler", step: 0.5 },
+    { id: "mayo", name: "Mayonnaise", unit: "L", pack: 5, packName: "5 L buckets of mayo", sup: "Wholesaler", step: 0.5 },
+    { id: "ketchup", name: "Ketchup", unit: "L", pack: 2, packName: "2 L bottles of ketchup", sup: "Wholesaler", step: 0.5 },
+    { id: "mustard", name: "Mustard", unit: "L", pack: 1, packName: "1 L tubs of mustard", sup: "Wholesaler", step: 0.1 },
+    { id: "syrup", name: "Sugar syrup", unit: "L", pack: 1, packName: "1 L bottles of syrup", sup: "Wholesaler", step: 0.1 },
+    { id: "cola", name: "Cola", unit: "cans", pack: 24, packName: "crates of 24 cola", sup: "Drinks", step: 1 },
+    { id: "beer", name: "Beer", unit: "bottles", pack: 24, packName: "crates of 24 beer", sup: "Drinks", step: 1 }
+  ];
+  const PREP = [
+    { id: "balls", name: "Beef balls", short: "beef balls", unit: "balls", verb: "Roll", note: "80 g each", from: { mince: 0.08 }, step: 1, round: v => Math.ceil(v - 1e-9) },
+    { id: "fries", name: "Cut fries", short: "fries", unit: "kg", verb: "Cut & blanch", note: "skin-on, 8 mm", from: { potatoes: 1.25 }, step: 0.5, round: v => ceilTo(v, 0.5) },
+    { id: "onion", name: "Diced onion", short: "diced onion", unit: "kg", verb: "Dice", note: "fine dice", from: { onions: 1.1 }, step: 0.5, round: v => ceilTo(v, 0.5) },
+    { id: "sauce", name: "Smash sauce", short: "smash sauce", unit: "L", verb: "Mix", note: "in 2 L batches", from: { mayo: 0.6, ketchup: 0.2, mustard: 0.1, pickles: 0.1 }, step: 0.5, round: v => ceilTo(v, 2) },
+    { id: "lemon", name: "Lemon juice", short: "lemon juice", unit: "L", verb: "Squeeze", note: "about 25 lemons a litre", from: { lemons: 25 }, step: 0.1, round: v => ceilTo(v, 0.5) }
+  ];
+  const MENU = [
+    { id: "double", name: "Double smash", base: 140, kind: "burgers", uses: { balls: 2, cheese: 2, buns: 1, onion: 0.02, pickles: 0.01, sauce: 0.025 } },
+    { id: "single", name: "Single smash", base: 90, kind: "burgers", uses: { balls: 1, cheese: 1, buns: 1, onion: 0.015, pickles: 0.008, sauce: 0.02 } },
+    { id: "veggie", name: "Veggie smash", base: 30, kind: "burgers", uses: { plant: 1, cheese: 1, buns: 1, onion: 0.015, pickles: 0.008, sauce: 0.02 } },
+    { id: "fries", name: "Fries", base: 200, kind: "fries", uses: { fries: 0.2 } },
+    { id: "lemonade", name: "Lemonade", base: 60, kind: "drinks", uses: { lemon: 0.04, syrup: 0.03 } },
+    { id: "cola", name: "Cola", base: 70, kind: "drinks", uses: { cola: 1 } },
+    { id: "beer", name: "Beer", base: 80, kind: "drinks", uses: { beer: 1 } }
+  ];
+  const BY = Object.fromEntries([...PREP, ...RAW].map(i => [i.id, i]));
+  function ceilTo(v, s) { return Math.ceil(v / s - 1e-9) * s; }
+  const r1 = v => Math.round(v * 10) / 10;
+  const dec = u => u === "kg" || u === "L";
+  const fmt = (v, u) => dec(u) ? r1(v).toLocaleString("en-GB", { maximumFractionDigits: 1 }) : Math.round(v).toLocaleString("en-GB");
+  const qu = (v, u) => fmt(v, u) + " " + u;
+  const day = n => { const d = new Date(); d.setDate(d.getDate() + n); return d.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" }); };
+  const esc = t => String(t).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+  const sample = () => ({ venue: "Smash Club", sales: Object.fromEntries(MENU.map(m => [m.id, m.base])), miss: {}, done: {} });
+  const KEY = "close-and-prep-b";
+  let S = sample();
+  try { const raw = localStorage.getItem(KEY); if (raw) S = Object.assign(sample(), JSON.parse(raw)); } catch (e) {}
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
+  const $ = id => document.getElementById(id);
+
+  // Missing = what today's sales used. Prepped items first; stock includes what tomorrow's prep will use.
+  function model() {
+    const direct = {}, usedPrep = {};
+    MENU.forEach(m => Object.entries(m.uses).forEach(([k, q]) => {
+      const n = (Number(S.sales[m.id]) || 0) * q;
+      if (BY[k] && BY[k].verb) usedPrep[k] = (usedPrep[k] || 0) + n; else direct[k] = (direct[k] || 0) + n;
+    }));
+    const prep = PREP.map(p => {
+      const guess = usedPrep[p.id] > 0 ? p.round(usedPrep[p.id]) : 0;
+      const set = S.miss[p.id] != null;
+      return { it: p, v: set ? Number(S.miss[p.id]) : guess, set };
+    });
+    const pv = Object.fromEntries(prep.map(x => [x.it.id, x.v]));
+    const raw = RAW.map(r => {
+      let g = direct[r.id] || 0;
+      PREP.forEach(p => { if (p.from[r.id]) g += p.from[r.id] * pv[p.id]; });
+      g = dec(r.unit) ? r1(g) : Math.round(g);
+      const set = S.miss[r.id] != null;
+      return { it: r, v: set ? Number(S.miss[r.id]) : g, set };
+    });
+    const tasks = prep.filter(x => x.v > 0).map(x => {
+      const [r, q] = Object.entries(x.it.from)[0];
+      const uses = qu(q * x.v, BY[r].unit) + (BY[r].unit === "lemons" ? "" : " " + BY[r].name.toLowerCase());
+      return { ...x, uses };
+    });
+    const sups = {};
+    raw.forEach(x => { const packs = x.v > 0 ? Math.ceil(x.v / x.it.pack - 1e-9) : 0; if (packs) (sups[x.it.sup] = sups[x.it.sup] || []).push({ it: x.it, packs }); });
+    const totals = ["burgers", "fries", "drinks"].map(k => [k, MENU.filter(m => m.kind === k).reduce((a, m) => a + (Number(S.sales[m.id]) || 0), 0)]);
+    return { prep, raw, tasks, sups, totals };
+  }
+
+  function stepper(kind, it, v, guess) {
+    const id = kind + "-" + it.id, label = it.name + (kind === "s" ? " sold" : " missing");
+    return `<div class="step${guess ? " guess" : ""}"><button type="button" id="dn-${id}" data-k="${kind}" data-id="${it.id}" data-d="-1" aria-label="Less ${label}">−</button><input id="in-${id}" type="number" inputmode="decimal" min="0" step="${it.step || 1}" value="${v}" data-k="${kind}" data-id="${it.id}" aria-label="${label}"><button type="button" id="up-${id}" data-k="${kind}" data-id="${it.id}" data-d="1" aria-label="More ${label}">+</button></div>`;
+  }
+  const taskHTML = t => `<label class="task${S.done[t.it.id] ? " done" : ""}"><input class="check" type="checkbox" data-done="${t.it.id}" ${S.done[t.it.id] ? "checked" : ""}><span class="what"><b>${t.it.verb} <em class="num">${fmt(t.v, t.it.unit)}${t.it.unit === "balls" ? "" : " " + t.it.unit}</em> ${t.it.short}</b><small>${t.it.note} · uses ${t.uses}</small></span></label>`;
+  const orderHTML = sups => {
+    const names = Object.keys(sups);
+    if (!names.length) return `<p class="muted">Nothing to order.</p>`;
+    return names.map(n => `<div class="sup"><div class="sup-h"><b>${n}</b><a class="copy" href="https://wa.me/?text=${encodeURIComponent(supText(n))}" target="_blank" rel="noopener" aria-label="Order from ${n} on WhatsApp">Order</a></div><ul>${sups[n].map(l => `<li><span>${l.packs}×</span>${l.it.packName}</li>`).join("")}</ul></div>`).join("");
+  };
+  const header = () => `<header class="hdr">
+      <h1>Free restaurant prep sheet and order list generator</h1>
+      <p>To know what to prep and order after a shift, multiply what you sold by the portion each dish uses. That's what's missing. Check it at close. Anything you make goes on tomorrow's prep sheet, and anything you buy goes on the supplier order.</p>
+      <label class="venue">Kitchen <input id="venue" type="text" value="${esc(S.venue)}" maxlength="30" autocomplete="off"></label>
+    </header>`;
+  const tail = () => `<section class="cta"><p><b>Doing this on paper every night?</b> Tebi is building Inventory that takes stock down with every sale and makes reorder lists for you.</p><a href="https://www.tebi.com/inventory?utm_source=gaia-decaro&amp;utm_medium=free-tool&amp;utm_campaign=close-and-prep&amp;utm_content=cta-main" target="_blank" rel="noopener">See Tebi <span aria-hidden="true">↗</span></a></section>
+    <section class="faq" aria-labelledby="hfaq"><h2 id="hfaq">Questions</h2>
+      <details><summary>How do you know what to prep and order after a shift?</summary><p>Multiply what you sold by the portion each dish uses. That's what left the kitchen. Check it at close, then put what you make on the prep sheet and what you buy on the order.</p></details>
+      <details><summary>What's the difference between a prep sheet and an order?</summary><p>The prep sheet is what the kitchen makes in-house for tomorrow. The order is what you buy from suppliers, rounded up to the packs they sell.</p></details>
+      <details><summary>How much minced beef do I need for 100 smash burgers?</summary><p>At 80 g per ball, 100 singles need 8 kg and 100 doubles need 16 kg.</p></details>
+      <details><summary>How many portions of fries come from a kilo of potatoes?</summary><p>About 1.25 kg of raw potatoes gives 1 kg of cut fries, which is 5 portions of 200 g.</p></details>
+      <details><summary>How often should a restaurant count its stock?</summary><p>A quick check of prepped food and fast-moving stock at every close, and a full count once a week.</p></details>
+      <details><summary>What does 86 mean in a kitchen?</summary><p>It means an item is sold out, so the floor has to stop selling it. A clear prep sheet is how you avoid it mid-service.</p></details>
+    </section>
+    <footer class="foot"><span>Close &amp; Prep · a free tool by Gaia De Caro · not affiliated with Tebi</span><span>Updated 29 October 2026 · your numbers stay in this browser</span></footer>`;
+
+  // B · Three columns
+  function viewB(M) {
+    const line = (kind, x) => `<div class="line"><span class="nm"><span>${x.it.name}</span>${kind === "m" ? `<span class="unit">${x.it.unit}</span>` : ""}</span>${stepper(kind, x.it, x.v, kind === "m" && !x.set)}</div>`;
+    return `<div class="B">${header()}
+      <div class="flow">
+        <section class="colm c1" aria-labelledby="hb1"><header style="flex-direction:column;align-items:flex-start;gap:2px"><h2 id="hb1">Sold</h2><span>Every dish ordered tonight</span></header><div class="body">
+          
+          ${MENU.map(m => line("s", { it: m, v: S.sales[m.id] ?? 0 })).join("")}</div></section>
+        <section class="colm c2" aria-labelledby="hb2"><header style="flex-direction:column;align-items:flex-start;gap:2px"><h2 id="hb2">Missing</h2><span>Estimation based on sales</span></header><div class="body">
+          <div class="grp">Made in the kitchen</div>${M.prep.map(x => line("m", x)).join("")}
+          <div class="grp">Bought in</div>${M.raw.map(x => line("m", x)).join("")}
+          <button type="button" class="linkbtn" data-reset style="justify-self:start;margin-top:12px">Start over with the example</button></div></section>
+        <section class="colm c3" aria-labelledby="hb3"><header><h2 id="hb3">Tomorrow</h2></header><div class="body">
+          <h3>Prep sheet</h3>${M.tasks.map(taskHTML).join("") || `<p class="muted">Nothing to prep.</p>`}<button type="button" class="copy" data-copyprep style="justify-self:start">copy prep sheet</button>
+          <h3 style="padding-top:18px">Order</h3>${orderHTML(M.sups)}</div></section>
+      </div>
+      ${tail()}</div>`;
+  }
+
+  function render(focusId) {
+    const M = model();
+    $("app").innerHTML = viewB(M);
+    if (focusId) { const f = $(focusId); if (f) f.focus({ preventScroll: true }); }
+  }
+
+  function setVal(kind, id, v) {
+    v = Math.max(0, Math.round(v * 100) / 100);
+    if (kind === "s") { S.sales[id] = v; S.miss = {}; } else S.miss[id] = v;
+    save();
+  }
+  function supText(name) {
+    const M = model();
+    return `Hi! Order for ${S.venue || "our kitchen"}, delivery ${day(1)}:\n` + (M.sups[name] || []).map(l => `• ${l.packs} × ${l.it.packName}`).join("\n") + `\nThanks!`;
+  }
+  function prepText() {
+    const M = model();
+    return `PREP · ${day(1)} · ${S.venue || "Kitchen"}\n` + M.tasks.map(t => `[ ] ${t.it.verb} ${fmt(t.v, t.it.unit)}${t.it.unit === "balls" ? "" : " " + t.it.unit} ${t.it.short}`).join("\n");
+  }
+  let tt;
+  function toast(t) { const el = $("toast"); el.textContent = t; el.hidden = false; clearTimeout(tt); tt = setTimeout(() => { el.hidden = true; }, 1600); }
+  function copy(text) { try { navigator.clipboard.writeText(text).then(() => toast("Copied"), () => fallback(text)); } catch (e) { fallback(text); } }
+  function fallback(text) {
+    const ta = document.createElement("textarea"); ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select(); let ok = false; try { ok = document.execCommand("copy"); } catch (e) {}
+    ta.remove(); toast(ok ? "Copied" : "Select the text and copy it");
+  }
+
+  document.addEventListener("click", e => {
+    const b = e.target.closest("button[data-d]");
+    if (b) {
+      const inp = $("in-" + b.dataset.k + "-" + b.dataset.id);
+      const step = Number(inp.step) || 1;
+      setVal(b.dataset.k, b.dataset.id, (Number(inp.value) || 0) + step * Number(b.dataset.d));
+      render(b.id);
+      return;
+    }
+    const c = e.target.closest("[data-copy]"); if (c) { copy(supText(c.dataset.copy)); return; }
+    if (e.target.closest("[data-copyprep]")) { copy(prepText()); return; }
+    if (e.target.closest("[data-reset]")) { S = sample(); save(); render(); toast("Example numbers back"); }
+  });
+  document.addEventListener("change", e => {
+    const t = e.target;
+    if (t.matches("input[type=number][data-k]")) { setVal(t.dataset.k, t.dataset.id, Number(t.value) || 0); render(); return; }
+    if (t.dataset.done) { S.done[t.dataset.done] = t.checked; save(); t.closest(".task").classList.toggle("done", t.checked); }
+  });
+  document.addEventListener("input", e => { if (e.target.id === "venue") { S.venue = e.target.value; save(); } });
+
+  render();
+})();
+</script>
+
+</body>
+</html>
