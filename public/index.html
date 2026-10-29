@@ -2,18 +2,18 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Close &amp; Prep · Free restaurant prep sheet and order list generator</title>
+<title>Close &amp; Prep · Free restaurant prep sheet and order list creator</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20130%20160%22%3E%3Crect%20x%3D%2248%22%20y%3D%226%22%20width%3D%2224%22%20height%3D%2214%22%20rx%3D%224%22%20fill%3D%22%23F4BE2A%22%20stroke%3D%22%23141110%22%20stroke-width%3D%225%22/%3E%3Cpath%20d%3D%22M52%2020h16v12c0%206%2020%2010%2020%2030v76a14%2014%200%200%201-14%2014H46a14%2014%200%200%201-14-14V62c0-20%2020-24%2020-30z%22%20fill%3D%22%23B3160F%22%20stroke%3D%22%23141110%22%20stroke-width%3D%225%22/%3E%3Crect%20x%3D%2236%22%20y%3D%2264%22%20width%3D%2248%22%20height%3D%2244%22%20rx%3D%2210%22%20fill%3D%22%23F6EBDD%22%20stroke%3D%22%23141110%22%20stroke-width%3D%224%22/%3E%3Ccircle%20cx%3D%2251%22%20cy%3D%2279%22%20r%3D%224.5%22%20fill%3D%22%23141110%22/%3E%3Ccircle%20cx%3D%2269%22%20cy%3D%2279%22%20r%3D%224.5%22%20fill%3D%22%23141110%22/%3E%3Cpath%20d%3D%22M50%2089q10%2011%2020%200%22%20fill%3D%22none%22%20stroke%3D%22%23141110%22%20stroke-width%3D%224.5%22%20stroke-linecap%3D%22round%22/%3E%3C/svg%3E">
 <link rel="canonical" href="https://close-and-prep.gaia-decaro.workers.dev/">
-<meta property="og:title" content="Close &amp; Prep: free restaurant prep sheet and order list generator">
+<meta property="og:title" content="Close &amp; Prep: free restaurant prep sheet and order list creator">
 <meta property="og:description" content="Enter what you sold tonight and get tomorrow's prep sheet and supplier order.">
 <meta property="og:url" content="https://close-and-prep.gaia-decaro.workers.dev/">
 <meta property="og:type" content="website">
 <meta name="author" content="Gaia De Caro">
 <meta name="robots" content="index, follow">
 
-<meta name="description" content="Free restaurant prep sheet and order list generator. Enter what you sold today and get tomorrow's prep sheet and supplier order.">
+<meta name="description" content="Free restaurant prep sheet and order list creator. Enter what you sold today and get tomorrow's prep sheet and supplier order.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Archivo:wght@400;500;600;700&display=swap">
@@ -136,9 +136,9 @@ input[type=text], input[type=number] { cursor: text !important; }
 
 <script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[
-{"@type":"WebApplication","name":"Close & Prep","applicationCategory":"BusinessApplication","operatingSystem":"Any","description":"Free restaurant prep sheet and order list generator.","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},"author":{"@type":"Person","name":"Gaia De Caro"},"dateModified":"2026-10-29"},
+{"@type":"WebApplication","name":"Close & Prep","applicationCategory":"BusinessApplication","operatingSystem":"Any","description":"Free restaurant prep sheet and order list creator.","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},"author":{"@type":"Person","name":"Gaia De Caro"},"dateModified":"2026-10-29"},
 {"@type":"FAQPage","mainEntity":[
-{"@type":"Question","name":"How do you know what to prep and order after a restaurant shift?","acceptedAnswer":{"@type":"Answer","text":"Multiply what you sold by the portion each dish uses. That is what left the kitchen, and roughly what is missing. Check it at close, then put what you make on tomorrow's prep sheet and what you buy on the supplier order."}},
+{"@type":"Question","name":"How do you know what to prep and order after a restaurant shift?","acceptedAnswer":{"@type":"Answer","text":"Start from what you sold tonight. Every dish uses a set amount of each ingredient, so your sales show what left the kitchen. Check it at close, then put what you make on tomorrow's prep sheet and what you buy on the supplier order."}},
 {"@type":"Question","name":"What is the difference between a prep sheet and a supplier order?","acceptedAnswer":{"@type":"Answer","text":"The prep sheet is what the kitchen makes in-house for tomorrow. The supplier order is what is bought, rounded up to the pack sizes suppliers sell."}},
 {"@type":"Question","name":"How much minced beef do I need for 100 smash burgers?","acceptedAnswer":{"@type":"Answer","text":"At 80 g per ball, 100 single smash burgers need 8 kg of minced beef and 100 doubles need 16 kg."}},
 {"@type":"Question","name":"How many portions of fries come from a kilo of potatoes?","acceptedAnswer":{"@type":"Answer","text":"About 1.25 kg of raw potatoes gives 1 kg of cut fries, which is 5 portions of 200 g."}},
@@ -239,13 +239,13 @@ input[type=text], input[type=number] { cursor: text !important; }
     return names.map(n => `<div class="sup"><div class="sup-h"><b>${n}</b><a class="copy" href="https://wa.me/?text=${encodeURIComponent(supText(n))}" target="_blank" rel="noopener" aria-label="Order from ${n} on WhatsApp">Order</a></div><ul>${sups[n].map(l => `<li><span>${l.packs}×</span>${l.it.packName}</li>`).join("")}</ul></div>`).join("");
   };
   const header = () => `<header class="hdr">
-      <h1>Free restaurant prep sheet and order list generator</h1>
-      <p>To know what to prep and order after a shift, multiply what you sold by the portion each dish uses. That's what's missing. Check it at close. Anything you make goes on tomorrow's prep sheet, and anything you buy goes on the supplier order.</p>
+      <h1>Restaurant prep sheet and order list creator</h1>
+      <p>Enter what you sold tonight and see what's missing from the kitchen. Check it at close, and get tomorrow's prep sheet and supplier order.</p>
       <div class="venuerow"><label class="venue">Kitchen <input id="venue" type="text" value="${esc(S.venue)}" maxlength="30" autocomplete="off"></label><button type="button" class="upload" data-upload><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></svg>Upload your own menu</button></div>
     </header>`;
   const tail = () => `<section class="cta"><p><b>Doing this on paper every night?</b> Tebi is building Inventory that takes stock down with every sale and makes reorder lists for you.</p><a href="https://www.tebi.com/inventory?utm_source=gaia-decaro&amp;utm_medium=free-tool&amp;utm_campaign=close-and-prep&amp;utm_content=cta-main" target="_blank" rel="noopener">See Tebi <span aria-hidden="true">↗</span></a></section>
     <section class="faq" aria-labelledby="hfaq"><h2 id="hfaq">Questions</h2>
-      <details><summary>How do you know what to prep and order after a shift?</summary><p>Multiply what you sold by the portion each dish uses. That's what left the kitchen. Check it at close, then put what you make on the prep sheet and what you buy on the order.</p></details>
+      <details><summary>How do you know what to prep and order after a shift?</summary><p>Start from what you sold. Every dish uses a set amount of each ingredient, so your sales show what left the kitchen. Check it at close, then put what you make on the prep sheet and what you buy on the order.</p></details>
       <details><summary>What's the difference between a prep sheet and an order?</summary><p>The prep sheet is what the kitchen makes in-house for tomorrow. The order is what you buy from suppliers, rounded up to the packs they sell.</p></details>
       <details><summary>How much minced beef do I need for 100 smash burgers?</summary><p>At 80 g per ball, 100 singles need 8 kg and 100 doubles need 16 kg.</p></details>
       <details><summary>How many portions of fries come from a kilo of potatoes?</summary><p>About 1.25 kg of raw potatoes gives 1 kg of cut fries, which is 5 portions of 200 g.</p></details>
